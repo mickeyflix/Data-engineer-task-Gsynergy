@@ -161,4 +161,60 @@ Table hier_rtlloc {
 ![Untitled](https://github.com/user-attachments/assets/c11c74dc-2135-4b5d-a1cc-59fefc85ba97)
 
 
+## TASK 2:- Pipeline Building
+
+### Loads this raw data into the data warehouse from external storage such
+as Azure Blobs, AWS S3 or the like. You must write basic checks such as
+non-null, uniqueness of primary key, data types. Also check for foreign
+key constraints between fact and dimension tables. Do it for at least one
+hier (dimension), and one fact table.
+
+1) For this loading of the data, we are gonna use AWS S3 for storing the data, AWS Glue for the ETL purpose, and AWS Redshift as our data warehouse
+2) So, for this first we create the IAM role and User which has access to AWS S3, AWS Redshift, AWS Glue
+3) For redshift purpose IAM role we created the IAM role with the name of redshift s3 access which has the access of all functionality for AWS S3, AWS Redshift, AWS Glue
+4) Same for AWS Glue as well we did the same
+5) Now we load our data in S3 bucket. We are taking two dataset one is fact_transcation and other is hier_prod
+6) After loading the data in AWS S3 we will now start with the creation of Glue job where we start our loading part
+7) I have attached the python script in GitHub with the name of glue-synergy.py
+8) On this glue job I am loading the S3 data and then doing the transformation like handling null values and removing duplicates
+9) Before running the Job we have to create the Redshift cluster as well with the correct config  and IAM
+10) After setting up the Redshift cluster connection we can add those config in our glue job and run those job that will load those table in redshift.
+11) Please see the below image for more info.
+12) ![image](https://github.com/user-attachments/assets/35c719e2-d19e-4779-b603-ecbc85bfe8ae)
+
+### Create a staging schema where the hierarchy table has been normalized
+into a table for each level and the staged fact table has foreign key
+relationships with those tables.
+
+1) For the above query, I am going to attach the SQL query of creating the staging schema and normalizing the table into different foreign key
+2) It is with the name of staging.sql
+3) you can refer the below image
+   ![image](https://github.com/user-attachments/assets/6d53f939-3144-40ea-a88b-9a8086fcc08e)
+
+
+### Create a refined table called mview_weekly_sales which totals sales_units,
+sales_dollars, and discount_dollars by pos_site_id, sku_id, fsclwk_id,
+price_substate_id and type.
+
+1) Same for this one, I'm going to attach the SQL query of creating the mview_weekly_sales
+2) it is the name of weekly.sql
+3) You can refer to the below image
+   ![image](https://github.com/user-attachments/assets/1d5fbdaf-5240-48de-ae6b-625f18f228a1)
+
+### BONUS: write transformation logic that will incrementally calculate all the
+totals in the above table for partially loaded data.
+1) For this, we have created one more glue job that incrementally calculates all the totals in the above table or partially loaded data. \
+2) It is with the name of incremental.py
+3) First, we have to create a new table with the name of staging.fact_transactions_delta, which is used to fetch new data from Redshift used for incremental refresh
+4) CREATE TABLE staging.fact_transactions_delta AS 
+SELECT * FROM public.fact_transactions WHERE fscldt_id = (SELECT MAX(fscldt_id) FROM public.fact_transactions);
+5) After applying the above query, we will create our incremental glue job.
+
+
+   
+
+
+
+
+
 
